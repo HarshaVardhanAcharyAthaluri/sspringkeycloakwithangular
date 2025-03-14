@@ -33,19 +33,14 @@ public class ProductController {
 
     @PostMapping("/saveorder")
     public String saveOrder(@RequestHeader Map<String, String> reqheaders) {
-        ArrayList al = new ArrayList();
+
         Product product1 = new Product(1,"Books",100);
         Product product2 = new Product(2,"Garments",200);
         OrderDto orderDto = new OrderDto();
         orderDto.setCustomerName("vivek");
         orderDto.setProducts(List.of(product1,product2));
-        al.add(orderDto);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", reqheaders.get("authorization"));
-
-        HttpEntity<OrderDto> request = new HttpEntity<>(orderDto, headers);
-        restTemplate.postForObject("http://localhost:8089/saveorder", request,OrderDto.class,headers);
+        
+        restTemplate.postForObject("http://localhost:8089/saveorder", orderDto, OrderDto.class);
         return "OrderSaved";
 
     }
