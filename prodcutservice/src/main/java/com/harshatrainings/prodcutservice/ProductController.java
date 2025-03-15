@@ -5,6 +5,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,9 @@ public class ProductController {
     ProductService productService;
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private WebClient webClient;
 
     @GetMapping("/products")
     public List<Product> getALlProducts(@RequestHeader Map<String, String> headers) {
@@ -39,9 +44,21 @@ public class ProductController {
         OrderDto orderDto = new OrderDto();
         orderDto.setCustomerName("vivek");
         orderDto.setProducts(List.of(product1,product2));
-        
+
         restTemplate.postForObject("http://localhost:8089/saveorder", orderDto, OrderDto.class);
         return "OrderSaved";
+
+    }
+
+    @PostMapping("/webclientpost")
+    public Mono<OrderDto> saveOrderwithWebclient(){
+        Product product1 = new Product(1,"webclientproduct",100);
+        Product product2 = new Product(2,"Garments",200);
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCustomerName("vivek");
+        orderDto.setProducts(List.of(product1,product2));
+       return webClient.post().uri("http://localhost:8089/saveorder").bodyValue(orderDto).retrieve().bodyToMono(OrderDto.class);
+
 
     }
 
