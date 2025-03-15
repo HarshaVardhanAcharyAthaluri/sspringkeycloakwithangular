@@ -36,6 +36,23 @@ public class ProductController {
                 .findAny().orElseThrow(()->new RuntimeException("Product Not Found"));
     }
 
+    @PostMapping("/authjeadersave")
+    public String saveOrderWithHeader(@RequestHeader Map<String, String> reqheaders) {
+
+        Product product1 = new Product(1,"Books",100);
+        Product product2 = new Product(2,"Garments",200);
+        OrderDto orderDto = new OrderDto();
+        orderDto.setCustomerName("vivek");
+        orderDto.setProducts(List.of(product1,product2));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", reqheaders.get("authorization"));
+
+        HttpEntity<OrderDto> request = new HttpEntity<>(orderDto, headers);
+        restTemplate.postForObject("http://localhost:8089/saveorder", request,OrderDto.class,headers);
+        return "OrderSaved";
+
+    }
     @PostMapping("/saveorder")
     public String saveOrder(@RequestHeader Map<String, String> reqheaders) {
 
